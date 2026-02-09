@@ -123,8 +123,8 @@ endfunction
 " Check Vim version
 "==============================================================================
 
-if !has("channel") || !has("job")
-    call RWarningMsg("Vim-R requires Vim compiled with both +channel and +job features.\n")
+if !has("channel") || !has("job") || !exists('*popup_create') || !exists(':terminal')
+    call RWarningMsg("Vim-R requires Vim compiled with +channel, +job, popup windows, and :terminal support.\n")
     let g:rplugin.failed = 1
     finish
 endif
