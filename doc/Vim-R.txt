@@ -595,10 +595,6 @@ In any case, the pdf viewer must be started by the Vim-R plugin. See
 ------------------------------------------------------------------------------
 4.3. Omni completion
 
-If `cmp-vim-r` (a source for `nvim-cmp`) is installed, Neovim can
-automatically complete the names of R objects as you type them (but
-conventional Vim omni completion does not work if `cmp-vim-r` is installed).
-
 Vim-R does not complete the names of all functions of all installed packages
 (see |R_start_libs|).
 
@@ -856,19 +852,7 @@ as expected again after any valid code is executed in the R Console.
 
 
 ------------------------------------------------------------------------------
-5.5. Error if there is no package installed (Neovim on Windows only)
-
-On Windows, Neovim fails to recognize that a directory is not writable, and
-this is required by Vim-R to detect if it is necessary to create the
-directory defined by `$R_LIBS_USER` environment variable. Consequently, Vim-R
-does no try to create the directory and vimcom installation fails. This
-problem will happen if you have just installed or upgraded R. The workaround
-is to manually open R and install any package with the `install.packages()`
-command before using Vim-R.
-
-
-------------------------------------------------------------------------------
-5.6. ~/.Rprofile should not output anything (Windows only)
+5.5. ~/.Rprofile should not output anything (Windows only)
 
 The compilation of `vimcom` during R startup will fail on Windows if your
 `~/.Rprofile` outputs anything. Example of how to replicate the bug:
@@ -877,7 +861,7 @@ The compilation of `vimcom` during R startup will fail on Windows if your
 <
 
 ------------------------------------------------------------------------------
-5.7 You can't put `syntax enable` in your `init.vim` (OS X only)
+5.6 You can't put `syntax enable` in your `init.vim` (OS X only)
 
 It seems that if you put the command `syntax enable` in your `init.vim` on OS
 X, file type plugins are immediately sourced. Consequently, some Vim-R
@@ -1513,7 +1497,7 @@ Notes:
 By default, functions from `.GlobalEnv` and other environments in the
 `search()` path whose names do not start with `"package:"` are immediately
 highlighted after being created in the R workspace if `R_set_omnifunc` is not
-empty, the Object Browser is open, or `cmp-vim-r` is installed.
+empty, or the Object Browser is open.
 
 Functions from environments in the search path are highlighted as functions
 from packages, but in Neovim (not in Vim) you can set a different highlight
@@ -1975,21 +1959,13 @@ R code, but only if they begin with the substring "tab:".
 If the reference includes the field "file", you can open this file by typing
 <LocalLeader>od in Normal mode with the cursor over the citation key.
 
-Rmarkdown and Quarto:
-
-For either RMarkdown or Quarto documents it is recommended to install zotcite
-and cmp-zotcite for completing citation keys directly from Zotero database:
-
-   https://github.com/jalvesaq/zotcite
-   https://github.com/jalvesaq/cmp-zotcite
-
-If zotcite is not installed, Vim-R will do omni completion of bibliographic
-citation keys from `.bib` files, requiring Python 3 and the PyBTeX library for
-Python 3 to work. Then, Vim-R will look for bibliographic data in any `.bib`
-file listed in the `bibliography` field of the YAML header. If the
-`bibliography` field is not defined, it will use all `.bib` files that are in
-the same directory of the RMarkdown document as bibliography sources. The list
-of `.bib` files is updated whenever the buffer is saved.
+Vim-R will do omni completion of bibliographic citation keys from `.bib`
+files, requiring Python 3 and the PyBTeX library for Python 3 to work. Then,
+Vim-R will look for bibliographic data in any `.bib` file listed in the
+`bibliography` field of the YAML header. If the `bibliography` field is not
+defined, it will use all `.bib` files that are in the same directory of the
+RMarkdown document as bibliography sources. The list of `.bib` files is
+updated whenever the buffer is saved.
 
 If the reference includes the field "file", you can open this file by typing
 <LocalLeader>od in Normal mode with the cursor over the citation key.
@@ -2214,33 +2190,8 @@ want to know what they are, while editing an R file, do in Normal mode:
                                                               *R_quarto_intel*
                                                               *R_bib_compl*
 
-There are two ways of getting automatic completion of R objects names while
-you type: using Vim-R's built-in completion system (as a source for
-`nvim-cmp`) and using a language server. See:
-
-   https://github.com/jalvesaq/cmp-vim-r
-   https://github.com/REditorSupport/languageserver
-
-The advantage of Vim-R's built-in system is the ability to complete objects
-of the R's workspace (`.GlobalEnv`), including column names of data.frames.
-
-Note: If you are using the `languageserver` package, you should disable its
-omni completion feature in your `~/.Rprofile` to get completions from
-`cmp-vim-r`:
->r
-   options(languageserver.server_capabilities =
-           list(completionProvider = FALSE,
-                completionItemResolve = FALSE))
-<
-If you prefer to get completions from the language server, `cmp-vim-r` should
-not be installed, and you should set `R_set_omnifunc` as an empty list in your
-|vimrc|:
->vim
-   let R_set_omnifunc = []
-<
-If `cmp-vim-r` is not installed, you still can define in your |vimrc| the
-list of file types supported by Vim-R that should have the traditional Vim's
-omni completion enabled. Example:
+You can define in your |vimrc| the list of file types supported by Vim-R that
+should have the traditional Vim's omni completion enabled. Example:
 >vim
    let R_set_omnifunc = ["r",  "rmd", "quarto", "rnoweb", "rhelp", "rrst"]
 <
@@ -2295,19 +2246,9 @@ file types if you include them in the list `R_bib_compl`. Example:
 >vim
    let R_bib_compl = ['rnoweb', 'rmd', 'quarto']
 <
-However, there are many alternative plugins for completing bib keys that work
-better than Vim-R. Examples:
-
-   - `zotcite` with `cmp-zotice` (for Markdown, Rmd and Quarto):
-     https://github.com/jalvesaq/zotcite
-     https://github.com/jalvesaq/cmp-zotcite
-
-   - `VimTeX` (for Rnoweb):
-     https://github.com/lervag/vimtex/
-
-   - Either `cmp-pandoc-references` or `cmp-pandoc.nvim` source for `nvim-cmp`:
-     https://github.com/jc-doyle/cmp-pandoc-references
-     https://github.com/aspeddro/cmp-pandoc.nvim
+However, there are alternative plugins for completing bib keys that work
+better than Vim-R, such as `VimTeX` (for Rnoweb,
+https://github.com/lervag/vimtex/).
 
 
 ------------------------------------------------------------------------------
@@ -2608,6 +2549,7 @@ See also: |R_source|.
 8. News                                                          *Vim-R-news*
 
  * Rename Nvim-R as Vim-R, nvimcom as vimcom, and cmp-nvim-r as cmp-vim-r.
+ * Remove support for Neovim.
 
 0.9.21 (2025-04-15)
 

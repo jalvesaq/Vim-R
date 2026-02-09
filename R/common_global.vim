@@ -9,19 +9,9 @@
 set encoding=utf-8
 scriptencoding utf-8
 
-" Do nothing if this is Neovim and R.nvim is installed
+" Do nothing if this is Neovim
 if has("nvim")
-    if exists("g:R_Nvim_status")
-        " R.nvim was loaded first
-        let g:has_Rnvim = 1
-        finish
-    endif
-
-    " R.nvim might be installed, but not loaded yet
-    lua if pcall(require, 'r') then vim.g.has_Rnvim = 1 end
-    if exists("g:has_Rnvim")
-        finish
-    endif
+    finish
 endif
 
 " Do this only once
@@ -52,13 +42,6 @@ endif
 " WarningMsg
 "==============================================================================
 
-function CloseRWarn(timer)
-    let id = win_id2win(s:float_warn)
-    if id > 0
-        call nvim_win_close(s:float_warn, 1)
-    endif
-endfunction
-
 function FormatPrgrph(text, splt, jn, maxlen)
     let wlist = split(a:text, a:splt)
     let txt = ['']
@@ -88,23 +71,7 @@ function FormatTxt(text, splt, jn, maxl)
 endfunction
 
 let s:float_warn = 0
-let g:rplugin.has_notify = v:false
-if has('nvim')
-    lua if pcall(require, 'notify') then vim.cmd('let g:rplugin.has_notify = v:true') end
-endif
 function RFloatWarn(wmsg)
-    if g:rplugin.has_notify
-        let qmsg = substitute(a:wmsg, "'", "\\\\'", "g")
-        exe "lua require('notify')('" . qmsg . "', 'warn', {title = 'Vim-R'})"
-        return
-    endif
-
-    " Close any float warning eventually still open
-    let id = win_id2win(s:float_warn)
-    if id > 0
-        call nvim_win_close(s:float_warn, 1)
-    endif
-
     let fmsg = ' ' . FormatTxt(a:wmsg, ' ', " \n ", 60)
     let fmsgl = split(fmsg, "\n")
     let realwidth = 10
@@ -114,38 +81,14 @@ function RFloatWarn(wmsg)
         endif
     endfor
     let wht = len(fmsgl) > 3 ? 3 : len(fmsgl)
-    if has('nvim')
-        if !exists('s:warn_buf')
-            let s:warn_buf = nvim_create_buf(v:false, v:true)
-            call setbufvar(s:warn_buf, '&buftype', 'nofile')
-            call setbufvar(s:warn_buf, '&bufhidden', 'hide')
-            call setbufvar(s:warn_buf, '&swapfile', 0)
-            call setbufvar(s:warn_buf, '&tabstop', 2)
-            call setbufvar(s:warn_buf, '&undolevels', -1)
-        endif
-        if has("nvim-0.8.0")
-            call nvim_set_option_value('syntax', 'off', {'buf': s:warn_buf})
-        else
-            call nvim_buf_set_option(s:warn_buf, "syntax", "off")
-        endif
-        call nvim_buf_set_lines(s:warn_buf, 0, -1, v:true, fmsgl)
-        let opts = {'relative': 'editor', 'width': realwidth, 'height': wht,
-                    \ 'col': winwidth(0) - realwidth,
-                    \ 'row': &lines - 3 - wht, 'anchor': 'NW', 'style': 'minimal'}
-        let s:float_warn = nvim_open_win(s:warn_buf, 0, opts)
-        hi FloatWarnNormal ctermfg=196 guifg=#ff0000 guibg=#222200
-        call nvim_win_set_option(s:float_warn, 'winhl', 'Normal:FloatWarnNormal')
-        call timer_start(2000 * len(fmsgl), 'CloseRWarn')
-    else
-        let fline = &lines - 2 - wht
-        let fcol = winwidth(0) - realwidth
-        let s:float_warn = popup_create(fmsgl, #{
-                    \ line: fline,
-                    \ col: fcol,
-                    \ highlight: 'WarningMsg',
-                    \ time: 2000 * len(fmsgl),
-                    \ })
-    endif
+    let fline = &lines - 2 - wht
+    let fcol = winwidth(0) - realwidth
+    let s:float_warn = popup_create(fmsgl, #{
+                \ line: fline,
+                \ col: fcol,
+                \ highlight: 'WarningMsg',
+                \ time: 2000 * len(fmsgl),
+                \ })
 endfunction
 
 function WarnAfterVimEnter1()
@@ -168,7 +111,7 @@ function RWarningMsg(wmsg)
         endif
         return
     endif
-    if mode() == 'i' && (has('nvim-0.5.0') || has('patch-8.2.84'))
+    if mode() == 'i'
         call RFloatWarn(a:wmsg)
     endif
     echohl WarningMsg
@@ -177,21 +120,11 @@ function RWarningMsg(wmsg)
 endfunction
 
 "==============================================================================
-" Check Vim/Neovim version
+" Check Vim version
 "==============================================================================
 
-if has("nvim")
-    if !has("nvim-0.6.0")
-        call RWarningMsg("Vim-R requires Neovim >= 0.6.0.")
-        let g:rplugin.failed = 1
-        finish
-    endif
-elseif v:version < "802"
-    call RWarningMsg("Vim-R requires either Neovim >= 0.6.0 or Vim >= 8.2.84")
-    let g:rplugin.failed = 1
-    finish
-elseif !has("channel") || !has("job") || !has('patch-8.2.84')
-    call RWarningMsg("Vim-R requires either Neovim >= 0.6.0 or Vim >= 8.2.84\nIf using Vim, it must have been compiled with both +channel and +job features.\n")
+if !has("channel") || !has("job")
+    call RWarningMsg("Vim-R requires Vim compiled with both +channel and +job features.\n")
     let g:rplugin.failed = 1
     finish
 endif
@@ -444,8 +377,8 @@ function ROpenPDF(fullpath)
 endfunction
 
 " For each noremap we need a vnoremap including <Esc> before the :call,
-" otherwise nvim will call the function as many times as the number of selected
-" lines. If we put <Esc> in the noremap, nvim will bell.
+" otherwise Vim will call the function as many times as the number of selected
+" lines. If we put <Esc> in the noremap, Vim will bell.
 " RCreateMaps Args:
 "   type : modes to which create maps (normal, visual and insert) and whether
 "          the cursor have to go the beginning of the line
@@ -675,33 +608,13 @@ function AddForDeletion(fname)
 endfunction
 
 function RVimLeave()
-    if has('nvim')
-        for job in keys(g:rplugin.jobs)
-            if IsJobRunning(job)
-                if job == 'Server' || job == 'BibComplete'
-                    " Avoid warning of exit status 141
-                    call JobStdin(g:rplugin.jobs[job], "9\n")
-                    sleep 20m
-                endif
-            endif
-        endfor
-    endif
-
     for fn in g:rplugin.del_list
         call delete(fn)
     endfor
     if executable("rmdir")
-        if has('nvim')
-            call jobstart("rmdir '" . g:rplugin.tmpdir . "'", {'detach': v:true})
-        else
-            call system("rmdir '" . g:rplugin.tmpdir . "'")
-        endif
+        call system("rmdir '" . g:rplugin.tmpdir . "'")
         if g:rplugin.localtmpdir != g:rplugin.tmpdir
-            if has('nvim')
-                call jobstart("rmdir '" . g:rplugin.localtmpdir . "'", {'detach': v:true})
-            else
-                call system("rmdir '" . g:rplugin.localtmpdir . "'")
-            endif
+            call system("rmdir '" . g:rplugin.localtmpdir . "'")
         endif
     endif
 endfunction
@@ -915,7 +828,7 @@ let g:R_fun_data_2 = get(g:, 'R_fun_data_2', {'ggplot': ['aes'], 'with': ['*']})
 if exists(":terminal") != 2
     let g:R_external_term = get(g:, "R_external_term", 1)
 endif
-if !has("nvim") && !exists("*term_start")
+if !exists("*term_start")
     " exists(':terminal') return 2 even when Vim does not have the +terminal feature
     let g:R_external_term = get(g:, "R_external_term", 1)
 endif
@@ -971,19 +884,9 @@ endif
 " before starting the vimrserver because it needs them at startup.
 " The R_set_omnifunc must be defined before finalizing the source of common_buffer.vim.
 let g:rplugin.update_glbenv = 0
-if has('nvim') && (type(luaeval("package.loaded['cmp_nvim_r']")) == v:t_dict)
-    call RWarningMsg("Please, update your cmp config: cmp_nvim_r was renamed as cmp_vim_r")
-endif
-if has('nvim') && (type(luaeval("package.loaded['cmp_vim_r']")) == v:t_dict)
-    let $VIMR_COMPLCB = "v:lua.require'cmp_vim_r'.asynccb"
-    let $VIMR_COMPLInfo = "v:lua.require'cmp_vim_r'.complinfo"
-    let g:R_set_omnifunc = []
-    let g:rplugin.update_glbenv = 1
-else
-    let $VIMR_COMPLCB = 'SetComplMenu'
-    let $VIMR_COMPLInfo = "SetComplInfo"
-    let g:R_set_omnifunc = get(g:, "R_set_omnifunc", ["r",  "rmd", "quarto", "rnoweb", "rhelp", "rrst"])
-endif
+let $VIMR_COMPLCB = 'SetComplMenu'
+let $VIMR_COMPLInfo = "SetComplInfo"
+let g:R_set_omnifunc = get(g:, "R_set_omnifunc", ["r",  "rmd", "quarto", "rnoweb", "rhelp", "rrst"])
 
 if len(g:R_set_omnifunc) > 0
     let g:rplugin.update_glbenv = 1
@@ -1042,11 +945,7 @@ endif
 " Current view of the object browser: .GlobalEnv X loaded libraries
 let g:rplugin.curview = "None"
 
-if has("nvim")
-    exe "source " . substitute(g:rplugin.home, " ", "\\ ", "g") . "/R/vimrcom.vim"
-else
-    exe "source " . substitute(g:rplugin.home, " ", "\\ ", "g") . "/R/vimrcom.vim"
-endif
+exe "source " . substitute(g:rplugin.home, " ", "\\ ", "g") . "/R/vimrcom.vim"
 
 " SyncTeX options
 let g:rplugin.has_wmctrl = 0
@@ -1096,11 +995,7 @@ if g:R_applescript
 endif
 
 if type(g:R_external_term) == v:t_number && g:R_external_term == 0
-    if has("nvim")
-        exe "source " . substitute(g:rplugin.home, " ", "\\ ", "g") . "/R/nvimbuffer.vim"
-    else
-        exe "source " . substitute(g:rplugin.home, " ", "\\ ", "g") . "/R/vimbuffer.vim"
-    endif
+    exe "source " . substitute(g:rplugin.home, " ", "\\ ", "g") . "/R/vimbuffer.vim"
 endif
 
 if g:R_enable_comment
@@ -1117,13 +1012,8 @@ function GlobalRInit(...)
     let g:rplugin.debug_info['Time']['GlobalRInit'] = reltime()
     exe 'source ' . substitute(g:rplugin.home, " ", "\\ ", "g") . "/R/start_server.vim"
     " Set security variables
-    if has('nvim') && !has("nvim-0.7.0")
-        let $VIMR_ID = substitute(string(reltimefloat(reltime())), '.*\.', '', '')
-        let $VIMR_SECRET = substitute(string(reltimefloat(reltime())), '.*\.', '', '')
-    else
-        let $VIMR_ID = rand(srand())
-        let $VIMR_SECRET = rand()
-    end
+    let $VIMR_ID = rand(srand())
+    let $VIMR_SECRET = rand()
     call CheckVimcomVersion()
     let g:rplugin.debug_info['Time']['GlobalRInit'] = reltimefloat(reltime(g:rplugin.debug_info['Time']['GlobalRInit'], reltime()))
 endfunction

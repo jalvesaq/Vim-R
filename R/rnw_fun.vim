@@ -374,14 +374,7 @@ function SyncTeX_backward(fname, ln)
             call RRaiseWindow(g:R_term_title)
         elseif has("gui_running")
             if has("win32")
-                " Attempt 1
                 call JobStdin(g:rplugin.jobs["Server"], "87\n")
-
-                " Attempt 2
-                " if has("nvim")
-                "     call rpcnotify(0, 'Gui', 'Foreground')
-                " else
-                "     call foreground()
             else
                 call foreground()
             endif

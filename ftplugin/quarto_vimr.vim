@@ -1,3 +1,6 @@
+if has("nvim")
+    finish
+endif
 
 if exists("g:R_filetypes") && type(g:R_filetypes) == v:t_list && index(g:R_filetypes, 'quarto') == -1
     finish
@@ -20,9 +23,6 @@ endfunction
 
 " Necessary for RCreateMaps():
 exe "source " . substitute(expand("<sfile>:h:h"), ' ', '\ ', 'g') . "/R/common_global.vim"
-if exists("g:has_Rnvim")
-    finish
-endif
 
 call RCreateMaps('n',   'RQuartoRender',  'qr', ':call RQuarto("render")')
 call RCreateMaps('n',   'RQuartoPreview',  'qp', ':call RQuarto("preview")')

@@ -48,7 +48,7 @@ function Run_EvinceBackward()
 endfunction
 
 " Avoid possible infinite loop if Evince cannot open the document and
-" synctex_evince_forward.py keeps sending the message to Neovim run
+" synctex_evince_forward.py keeps sending the message to Vim run
 " SyncTeX_forward() again.
 function! Evince_Again()
     let g:rplugin.evince_loop += 1

@@ -187,7 +187,7 @@ function CreateNewFloat(...)
         endif
     endfor
 
-    if has("win32") && !has("nvim")
+    if has("win32")
         call map(flines, 'substitute(v:val, "^————$", repeat("-", realwidth), "")')
     else
         call map(flines, 'substitute(v:val, "^————$", repeat("—", realwidth), "")')
@@ -195,73 +195,25 @@ function CreateNewFloat(...)
 
     let flht = (len(flines) > maxh) ? maxh : len(flines)
 
-    if has('nvim')
-        if !exists('s:float_buf')
-            let s:float_buf = nvim_create_buf(v:false, v:true)
-            call setbufvar(s:float_buf, '&buftype', 'nofile')
-            call setbufvar(s:float_buf, '&bufhidden', 'hide')
-            call setbufvar(s:float_buf, '&swapfile', 0)
-            call setbufvar(s:float_buf, '&tabstop', 2)
-            call setbufvar(s:float_buf, '&undolevels', -1)
-        endif
-        if has("nvim-0.8.0")
-            call nvim_set_option_value('syntax', 'rdocpreview', {'buf': s:float_buf})
-        else
-            call nvim_buf_set_option(s:float_buf, "syntax", "rdocpreview")
-        endif
-
-        call nvim_buf_set_lines(s:float_buf, 0, -1, v:true, flines)
-
-        let opts = {'relative': 'editor', 'width': realwidth, 'height': flht,
-                    \ 'col': fcol, 'row': frow, 'anchor': fanchor, 'style': 'minimal'}
-        if s:float_win
-            call nvim_win_set_config(s:float_win, opts)
-        else
-            let s:float_win = nvim_open_win(s:float_buf, 0, opts)
-            call setwinvar(s:float_win, '&wrap', 1)
-            call setwinvar(s:float_win, '&colorcolumn', 0)
-            call setwinvar(s:float_win, '&signcolumn', 'no')
-            call setwinvar(s:float_win, '&conceallevel', 3)
-        endif
+    if fanchor == 'NE'
+        let fpos = 'topright'
+    elseif fanchor == 'SW'
+        let fpos = 'botleft'
+        let frow -= 1
     else
-        if fanchor == 'NE'
-            let fpos = 'topright'
-        elseif fanchor == 'SW'
-            let fpos = 'botleft'
-            let frow -= 1
-        else
-            let fpos = 'topleft'
-        endif
-        if s:float_win
-            call popup_close(s:float_win)
-        endif
-        let s:float_win = popup_create(flines, #{
-                    \ line: frow + 1, col: fcol, pos: fpos,
-                    \ maxheight: flht})
+        let fpos = 'topleft'
     endif
+    if s:float_win
+        call popup_close(s:float_win)
+    endif
+    let s:float_win = popup_create(flines, #{
+                \ line: frow + 1, col: fcol, pos: fpos,
+                \ maxheight: flht})
 endfunction
 
 function CloseFloatWin(...)
-    if has('nvim')
-        let id = win_id2win(s:float_win)
-        if id > 0
-            let ok = 1
-            try
-                call nvim_win_close(s:float_win, 1)
-            catch /E5/
-                " Cannot close the float window after cycling through all the
-                " items and going back to the original uncompleted pattern
-                let ok = 0
-            finally
-                if ok
-                    let s:float_win = 0
-                endif
-            endtry
-        endif
-    else
-        call popup_close(s:float_win)
-        let s:float_win = 0
-    endif
+    call popup_close(s:float_win)
+    let s:float_win = 0
 endfunction
 
 function OnCompleteDone()
