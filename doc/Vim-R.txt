@@ -860,19 +860,6 @@ The compilation of `vimcom` during R startup will fail on Windows if your
    print("Hello bug!")
 <
 
-------------------------------------------------------------------------------
-5.6 You can't put `syntax enable` in your `init.vim` (OS X only)
-
-It seems that if you put the command `syntax enable` in your `init.vim` on OS
-X, file type plugins are immediately sourced. Consequently, some Vim-R
-variables (`R_disable_cmds`, and `R_user_maps_only`) will
-be used at their default values even if their values have been set in
-the `init.vim`. The workaround is do not include the superfluous command
-`syntax enable` in the `init.vim`. For details, please, access:
-
-   https://github.com/jalvesaq/Vim-R/issues/668
-
-
 ==============================================================================
 6. Options                                                    *Vim-R-options*
 
