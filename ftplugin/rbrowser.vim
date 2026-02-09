@@ -77,12 +77,6 @@ function! UpdateOB(what)
     setlocal modifiable
     let curline = line(".")
     let curcol = col(".")
-    if !exists("curline")
-        let curline = 3
-    endif
-    if !exists("curcol")
-        let curcol = 1
-    endif
     let save_unnamed_reg = @@
     sil normal! ggdG
     let @@ = save_unnamed_reg
