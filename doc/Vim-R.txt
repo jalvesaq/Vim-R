@@ -1005,44 +1005,20 @@ Vim-R sets the option "editor" to a function that makes the object to be
 edited in a new tab when `R_esc_term` = 1 (the default value).
 
                                                                *R_close_term*
-Neovim does not close its built-in terminal emulator when the application
-running in it quits, but Vim-R does close it for you. If you rather prefer
-that the terminal remains open after R quits, put in your |vimrc|:
+The built-in terminal emulator running R is automatically closed when R quits.
+If you rather prefer that the terminal remains open after R quits, put in your
+|vimrc|:
 >vim
    let R_close_term = 0
 <
-Neovim stops automatically scrolling the R Console if you move the cursor to
-any line that is not the last one. This emulates the behavior of other
-terminal emulator, but considering that (1) R only outputs something after we
-send a command to it, and (2) when we send a command to R, we want to see its
-output, Vim-R will move the cursor to the last line of R Console before
-sending a command to it, forcing the auto scrolling of the terminal.
-
                                                                    *R_hl_term*
-If you are using Neovim, Vim-R will move the cursor to the end of R Console's
-buffer before sending a command to force the scrolling R output, but you can
-put the line below in your |init.vim| to disable the auto scrolling of the
-terminal:
->vim
-   let R_auto_scroll = 0
-<
-You may either use the package colorout (Unix only) to colorize R output or
-let Neovim highlight the terminal contents as it was a .Rout file type. Two
-advantages of colorout are the possibility of highlighting numbers close to
-zero in a different color and the distinction between stdout and stderr. The
-value of `R_hl_term` (0 or 1) determines whether Neovim should syntax highlight
-the R output, and its default value will be set to 0 if the package colorout
-is loaded. If you prefer do not rely on the auto detection of colorout, you
-should set the value of `R_hl_term` in your |vimrc|. Example:
->vim
-   let R_hl_term = 0
-<
+The value of `R_hl_term` (0 or 1) determines whether Vim should syntax highlight
+the R output. Note, however, that Vim can highlight the terminal only while in
+Normal mode.
                                                                     *R_OutDec*
 Right after starting R, Vim-R will try to detect if either the value of R's
-`OutDec` option is `","` or the current R script sets the `OutDec` option. If
-you are using Neovim to syntax highlight R's output and it is not correctly
-detecting R's `OutDec` option, then, to get numbers correctly recognized, you
-should put in your |vimrc|:
+`OutDec` option is `","` or the current R script sets the `OutDec` option, but
+you can also set it manually in your |vimrc|:
 >vim
    let R_OutDec = ','
 <
@@ -1209,7 +1185,7 @@ cursor is not at the beginning of the line.
 While editing R code, `_` is replaced with `<-`. If you want to bind other
 keys to be replaced by `<-`, set the value of |R_assign_map| in your
 |vimrc|, as in the example below which emulates RStudio behavior (may only
-work on GVim or Neovim):
+work on GVim):
 >vim
    let R_assign_map = '<M-->'
 <
@@ -1491,20 +1467,11 @@ Notes:
   - If you have too many loaded packages Vim may be unable to load the list of
     functions for syntax highlight.
 
-  - Vim-R does not control the syntax highlighting of functions when
-    `nvim-treesitter` is enabled to highlight code on Neovim.
-
 By default, functions from `.GlobalEnv` and other environments in the
 `search()` path whose names do not start with `"package:"` are immediately
 highlighted after being created in the R workspace if `R_set_omnifunc` is not
 empty, or the Object Browser is open.
 
-Functions from environments in the search path are highlighted as functions
-from packages, but in Neovim (not in Vim) you can set a different highlight
-command for them in your |vimrc|, as in the example below:
->vim
-   hi rGlobEnvFun ctermfg=117 guifg=#87d7ff cterm=italic gui=italic
-<
 If you prefer to completely disable the syntax highlighting of R functions by
 Vim-R put in your |vimrc|:
 >vim
@@ -2296,7 +2263,7 @@ Calc:
    let R_csv_app = 'localc'
    let R_csv_app = 'c:/Program Files (x86)/LibreOffice 4/program/scalc.exe'
 <
-On Windows, `R_csv_app` works only in GVim, not in Neovim.
+On Windows, `R_csv_app` works only in GVim.
 
 If the default field delimiter causes problems in your case, you can change it
 in your |vimrc|. Valid values are `"\t"`, `";"` and `","`. Example:
