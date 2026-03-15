@@ -50,16 +50,3 @@ highlight to include newly loaded libraries and open the PDF output after
 knitting an Rnoweb file and compiling the LaTeX result. Most of the
 information is transmitted through the TCP connection to the *vimrserver*,
 but temporary files are used in a few cases.
-
-
-## See also:
-
-   - [cmp-vim-r](https://github.com/jalvesaq/cmp-vim-r): [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) source using Vim-R as backend.
-
-   - [languageserver](https://cran.r-project.org/web/packages/languageserver/index.html): a language server for R.
-
-   - [colorout](https://github.com/jalvesaq/colorout): a package to colorize R's output.
-
-[Neovim]: https://github.com/neovim/neovim
-[southernlights]: https://github.com/jalvesaq/southernlights
-[colorout]: https://github.com/jalvesaq/colorout

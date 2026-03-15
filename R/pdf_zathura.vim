@@ -89,18 +89,6 @@ function ZathuraJobStdout(job_id, data, etype)
     endfor
 endfunction
 
-function StartZathuraNeovim(fullpath)
-    let g:rplugin.jobs["Zathura"] = jobstart(["zathura",
-                \ "--synctex-editor-command",
-                \ "echo 'call SyncTeX_backward(\"%{input}\",  \"%{line}\")'", a:fullpath],
-                \ {"detach": 1, "on_stderr": function('ROnJobStderr'), "on_stdout": function('ZathuraJobStdout')})
-    if g:rplugin.jobs["Zathura"] < 1
-        call RWarningMsg("Failed to run Zathura...")
-    else
-        let g:rplugin.zathura_pid[a:fullpath] = jobpid(g:rplugin.jobs["Zathura"])
-    endif
-endfunction
-
 function ZathuraJobstdoutV(job_id, msg)
     let cmd = substitute(a:msg, '\n', '', 'g')
     let cmd = substitute(cmd, '\r', '', 'g')
@@ -145,9 +133,5 @@ function RStart_Zathura(fullpath)
     endif
 
     let $VIMR_PORT = g:rplugin.myport
-    if has("nvim")
-        call StartZathuraNeovim(a:fullpath)
-    else
-        call StartZathuraVim(a:fullpath)
-    endif
+    call StartZathuraVim(a:fullpath)
 endfunction

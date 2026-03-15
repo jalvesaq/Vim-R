@@ -488,7 +488,7 @@ static void SendToRConsole(char *aString) {
         return;
     }
 
-    // The application (such as NeovimQt) might not define $WINDOWID
+    // The application might not define $WINDOWID
     if (!VimHwnd)
         VimHwnd = GetForegroundWindow();
 
@@ -673,14 +673,11 @@ void Windows_setup() // Setup Windows-specific configurations
         VimHwnd = (HWND)atol(getenv("WINDOWID"));
 #endif
     } else {
-        // The application (such as NeovimQt) might not define $WINDOWID
-        VimHwnd = FindWindow(NULL, "Neovim");
+        // The application might not define $WINDOWID
+        VimHwnd = FindWindow(NULL, "vim");
         if (!VimHwnd) {
-            VimHwnd = FindWindow(NULL, "vim");
-            if (!VimHwnd) {
-                fprintf(stderr, "\"Neovim\" window not found\n");
-                fflush(stderr);
-            }
+            fprintf(stderr, "\"Vim\" window not found\n");
+            fflush(stderr);
         }
     }
 }
@@ -1352,7 +1349,7 @@ static void finish_bol() {
         fclose(f);
     }
 
-    // Message to Neovim: Update both syntax and Rhelp_list
+    // Message to Vim: Update both syntax and Rhelp_list
     printf("call UpdateSynRhlist()\n");
     fflush(stdout);
 }

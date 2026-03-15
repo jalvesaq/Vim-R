@@ -1,3 +1,6 @@
+if has("nvim")
+    finish
+endif
 
 if exists("g:R_filetypes") && type(g:R_filetypes) == v:t_list && index(g:R_filetypes, 'rmd') == -1
     finish
@@ -5,9 +8,6 @@ endif
 
 " Define some buffer variables common to R, Rnoweb, Rmd, Rrst, Rhelp and rdoc:
 exe "source " . substitute(expand("<sfile>:h:h"), ' ', '\ ', 'g') . "/R/common_buffer.vim"
-if exists("g:has_Rnvim")
-    finish
-endif
 
 " Bibliographic completion
 if index(g:R_bib_compl, &filetype) > -1

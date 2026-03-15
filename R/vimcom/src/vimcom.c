@@ -1203,16 +1203,16 @@ static void *client_loop_thread(__attribute__((unused)) void *arg)
  * @param vrb Verbosity level (`vimcom.verbose` in ~/.Rprofile).
  *
  * @param anm Should names with starting with a dot be included in completion
- * lists? (`R_objbr_allnames` in init.vim).
+ * lists? (`R_objbr_allnames` in the vimrc).
  *
  * @param swd Should vimcom set the option "width" after the execution of
- * each command? (`R_setwidth` in init.vim).
+ * each command? (`R_setwidth` in the vimrc).
  *
  * @param age Should the list of objects in .GlobalEnv be automatically
- * updated? (`R_objbr_allnames` in init.vim)
+ * updated? (`R_objbr_allnames` in the vimrc)
  *
  * @param dbg Should detect when `broser()` is running and start debugging
- * mode? (`R_debug` in init.vim)
+ * mode? (`R_debug` in the vimrc)
  *
  * @param nvv vimcom version
  *
