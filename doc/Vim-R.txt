@@ -92,10 +92,6 @@ Main dependencies:
       Vim must be compiled with |+channel|, |+job| and |+conceal| features.
       In Normal mode, do `:version` to check if your Vim has these features.
 
-      Also cmp-vim-r if you want auto omni completion from Vim-R:
-      https://github.com/jalvesaq/cmp-vim-r
-
-
    R >= 4.0.0:
       http://www.r-project.org/
 
@@ -150,7 +146,6 @@ Suggestions for bibliographic completion from Zotero:
 For RMarkdown (`.Rmd`) and Quarto (`.qmd`) documents:
 
    - https://github.com/jalvesaq/zotcite
-   - https://github.com/jalvesaq/cmp-zotcite
 
 
 ------------------------------------------------------------------------------
@@ -2502,7 +2497,7 @@ See also: |R_source|.
 ==============================================================================
 8. News                                                          *Vim-R-news*
 
- * Rename Nvim-R as Vim-R, nvimcom as vimcom, and cmp-nvim-r as cmp-vim-r.
+ * Rename Nvim-R as Vim-R, and nvimcom as vimcom.
  * Remove support for Neovim.
 
 0.9.21 (2025-04-15)

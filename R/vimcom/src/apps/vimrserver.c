@@ -43,8 +43,9 @@ static int OpenLS;          // Flag for open lists in tree view
 static int vimcom_is_utf8; // Flag for UTF-8 encoding
 static int allnames; // Flag for showing all names, including starting with '.'
 
-static char compl_cb[64];      // Completion callback buffer
-static char compl_info[64];    // Completion info buffer
+static char compl_cb[] = "SetComplMenu";   // Completion callback buffer
+static char compl_info[] = "SetComplInfo"; // Completion info buffer
+
 static char compldir[256];     // Directory for completion files
 static char tmpdir[256];       // Temporary directory
 static char localtmpdir[256];  // Local temporary directory
@@ -1972,8 +1973,6 @@ static void init(void) {
     strncpy(VimSecret, getenv("VIMR_SECRET"), 127);
     VimSecretLen = strlen(VimSecret);
 
-    strncpy(compl_cb, getenv("VIMR_COMPLCB"), 63);
-    strncpy(compl_info, getenv("VIMR_COMPLInfo"), 63);
     strncpy(compldir, getenv("VIMR_COMPLDIR"), 255);
     strncpy(tmpdir, getenv("VIMR_TMPDIR"), 255);
     if (getenv("VIMR_LOCAL_TMPDIR")) {

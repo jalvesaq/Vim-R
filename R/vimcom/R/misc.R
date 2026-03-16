@@ -253,14 +253,9 @@ vim.GlobalEnv.fun.args <- function(funcname) {
     txt <- vim.args(funcname)
     txt <- gsub('\\\\\\"', '\005', txt)
     txt <- gsub('"', '\\\\"', txt)
-    if (Sys.getenv("VIMR_COMPLCB") == "SetComplMenu") {
-        .C("vimcom_msg_to_vim",
-           paste0('call FinishGlbEnvFunArgs("', funcname, '", "', txt, '")'), PACKAGE = "vimcom")
-    } else {
-        .C("vimcom_msg_to_vim",
-           paste0("call v:lua.require'cmp_vim_r'.finish_ge_fun_args(\"", txt, '")'),
-           PACKAGE = "vimcom")
-    }
+    .C("vimcom_msg_to_vim",
+       paste0('call FinishGlbEnvFunArgs("', funcname, '", "', txt, '")'),
+       PACKAGE = "vimcom")
     return(invisible(NULL))
 }
 
@@ -278,35 +273,14 @@ vim.get.summary <- function(obj, wdth) {
 
     owd <- getOption("width")
     options(width = wdth)
-    if (Sys.getenv("VIMR_COMPLCB") == "SetComplMenu") {
-        sobj <- try(summary(obj), silent = TRUE)
-        txt <- capture.output(print(sobj))
-    } else {
-        txt <- ""
-        objlbl <- attr(obj, "label")
-        if (!is.null(objlbl))
-            txt <- append(txt, capture.output(cat("\n\n", objlbl)))
-        txt <- append(txt, capture.output(cat("\n\n```rout\n")))
-        if (is.factor(obj) || is.numeric(obj) || is.logical(obj)) {
-            sobj <- try(summary(obj), silent = TRUE)
-            txt <- append(txt, capture.output(print(sobj)))
-        } else {
-            sobj <- try(capture.output(utils::str(obj)), silent = TRUE)
-            txt <- append(txt, sobj)
-        }
-        txt <- append(txt, capture.output(cat("```\n")))
-    }
+    sobj <- try(summary(obj), silent = TRUE)
+    txt <- capture.output(print(sobj))
     options(width = owd)
 
     txt <- paste0(txt, collapse = "\n")
     txt <- gsub("'", "\x13", gsub("\n", "\x14", txt))
 
-    if (Sys.getenv("VIMR_COMPLCB") == "SetComplMenu") {
-        .C("vimcom_msg_to_vim", paste0("call FinishGetSummary('", txt, "')"), PACKAGE = "vimcom")
-    } else {
-        .C("vimcom_msg_to_vim", paste0("call v:lua.require'cmp_vim_r'.finish_summary('", txt, "')"),
-                                         PACKAGE = "vimcom")
-    }
+    .C("vimcom_msg_to_vim", paste0("call FinishGetSummary('", txt, "')"), PACKAGE = "vimcom")
     return(invisible(NULL))
 }
 
