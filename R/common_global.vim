@@ -880,12 +880,8 @@ else
     let g:R_arrange_windows = get(g:, "R_arrange_windows", 0)
 endif
 
-" The environment variables VIMR_COMPLCB and VIMR_COMPLInfo must be defined
-" before starting the vimrserver because it needs them at startup.
-" The R_set_omnifunc must be defined before finalizing the source of common_buffer.vim.
+" R_set_omnifunc must be defined before finalizing the source of common_buffer.vim.
 let g:rplugin.update_glbenv = 0
-let $VIMR_COMPLCB = 'SetComplMenu'
-let $VIMR_COMPLInfo = "SetComplInfo"
 let g:R_set_omnifunc = get(g:, "R_set_omnifunc", ["r",  "rmd", "quarto", "rnoweb", "rhelp", "rrst"])
 
 if len(g:R_set_omnifunc) > 0
