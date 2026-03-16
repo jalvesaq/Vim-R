@@ -93,16 +93,6 @@ mounted locally. Below is an example of how to achieve this goal.
        let R_local_R_library_dir = '/path/to/local/R/library' " where vimcom is installed
        ```
 
-       or, if using `init.lua`:
-
-       ```lua
-       vim.g.R_app = '/home/locallogin/bin/sshR'
-       vim.g.R_cmd = '/home/locallogin/bin/sshR'
-       vim.g.R_compldir = '/home/locallogin/.remoteR'
-       vim.g.R_remote_compldir = '/home/remotelogin/.cache/Vim-R'
-       vim.g.R_local_R_library_dir = '/path/to/local/R/library' -- where vimcom is installed
-       ```
-
      - Mount the remote directory:
 
        ```sh
@@ -124,32 +114,3 @@ mounted locally. Below is an example of how to achieve this goal.
        cd /tmp
        R CMD INSTALL vimcom_0.9-149.tar.gz
        ```
-
-## Alternative: vimcmdline
-
-Running R on a remote machine will make a lot of data to be transferred
-through a TCP connection between the R package `vimcom` and the application
-`vimrserver` run by Vim-R. If your connection is not fast enough or its
-latency is too high, you could consider using
-[vimcmdline](https://github.com/jalvesaq/vimcmdline) or a similar plugin. Of
-course, none of Vim-R's features that depend on information on R's workspace
-will be available.
-
-Below is an example for `init.lua` of how to configure _vimcmdline_ for
-accessing R remotely:
-
-```lua
-vim.g.cmdline_app = {
-    r = 'ssh -t user@remote-machine R --no-save',
-}
-```
-
-Most of Vim-R's key bindings call functions that send code to R, and, because they
-will not be used, it is better to disable them:
-
-```lua
-vim.g.R_user_maps_only = 1
-```
-
-Finally, you may want to enable custom actions in _vimcmdline_ (seek `cmdline_actions`
-at [doc/vimcmdline.txt](https://github.com/jalvesaq/vimcmdline/blob/master/doc/vimcmdline.txt)).

@@ -2250,46 +2250,6 @@ char *parse_omnils(const char *s, const char *base, const char *pkg, char *p) {
     return p;
 }
 
-void resolve_arg_item(char *pkg, char *fnm, char *itm) {
-    char item[128];
-    snprintf(item, 127, "%s\005", itm);
-    PkgData *p = pkgList;
-    while (p) {
-        if (strcmp(p->name, pkg) == 0) {
-            if (p->args) {
-                char *s = p->args;
-                while (*s) {
-                    if (strcmp(s, fnm) == 0) {
-                        while (*s)
-                            s++;
-                        s++;
-                        while (*s != '\n') {
-                            if (str_here(s, item)) {
-                                while (*s && *s != '\005')
-                                    s++;
-                                s++;
-                                printf("call "
-                                       "v:lua.require'cmp_vim_r'.finish_get_"
-                                       "args('%s')\n",
-                                       s);
-                                fflush(stdout);
-                            }
-                            s++;
-                        }
-                        return;
-                    } else {
-                        while (*s != '\n')
-                            s++;
-                        s++;
-                    }
-                }
-            }
-            break;
-        }
-        p = p->next;
-    }
-}
-
 char *complete_args(char *p, char *funcnm) {
     // Check if function is "pkg::fun"
     char *pkg = NULL;
@@ -2526,20 +2486,6 @@ void stdin_loop() {
             if (strstr(wrd, "::"))
                 wrd = strstr(wrd, "::") + 2;
             completion_info(wrd, msg);
-            break;
-        case '7':
-            msg++;
-            char *p = msg;
-            while (*msg != '\002')
-                msg++;
-            *msg = 0;
-            msg++;
-            char *f = msg;
-            while (*msg != '\002')
-                msg++;
-            *msg = 0;
-            msg++;
-            resolve_arg_item(p, f, msg);
             break;
 #ifdef WIN32
         case '8':
