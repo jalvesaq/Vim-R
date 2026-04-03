@@ -1,4 +1,5 @@
 #include <R.h> /* to include Rconfig.h */
+#include <Rversion.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
 #include <R_ext/Parse.h>
@@ -471,12 +472,20 @@ static char *vimcom_glbnv_line(SEXP *x, const char *xname, const char *curenv,
         p = vimcom_strcat(p, "\006{\006");
     } else if (Rf_isFactor(*x)) {
         p = vimcom_strcat(p, "\006!\006");
+#if defined(R_VERSION) && R_VERSION >= R_Version(4, 6, 0)
+    } else if (Rf_isScalarString(*x)) {
+#else
     } else if (Rf_isValidString(*x)) {
+#endif
         p = vimcom_strcat(p, "\006~\006");
     } else if (Rf_isFunction(*x)) {
         p = vimcom_strcat(p, "\006\003\006");
         xgroup = 1;
+#if defined(R_VERSION) && R_VERSION >= R_Version(4, 6, 0)
+    } else if (Rf_isDataFrame(*x)) {
+#else
     } else if (Rf_isFrame(*x)) {
+#endif
         p = vimcom_strcat(p, "\006$\006");
         xgroup = 2;
     } else if (Rf_isNewList(*x)) {
@@ -517,7 +526,11 @@ static char *vimcom_glbnv_line(SEXP *x, const char *xname, const char *curenv,
     SET_STRING_ELT(lablab, 0, mkChar("label"));
     PROTECT(txt = getAttrib(*x, lablab));
     if (length(txt) > 0) {
+#if defined(R_VERSION) && R_VERSION >= R_Version(4, 6, 0)
+        if (Rf_isScalarString(txt)) {
+#else
         if (Rf_isValidString(txt)) {
+#endif
             snprintf(buf, 159, "\006\006%s", CHAR(STRING_ELT(txt, 0)));
             escape_str(buf);
             p = vimcom_strcat(p, buf);
@@ -655,7 +668,11 @@ static void vimcom_globalenv_list(void) {
 
     curdepth = 0;
 
+#if defined(R_VERSION) && R_VERSION >= R_Version(4, 6, 0)
+    PROTECT(envVarsSEXP = R_lsInternal3(R_GlobalEnv, allnames, TRUE));
+#else
     PROTECT(envVarsSEXP = R_lsInternal(R_GlobalEnv, allnames));
+#endif
     for (int i = 0; i < Rf_length(envVarsSEXP); i++) {
         varName = CHAR(STRING_ELT(envVarsSEXP, i));
         if (R_BindingIsActive(Rf_install(varName), R_GlobalEnv)) {
