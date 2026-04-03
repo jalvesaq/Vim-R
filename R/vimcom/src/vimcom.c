@@ -669,7 +669,7 @@ static void vimcom_globalenv_list(void) {
     curdepth = 0;
 
 #if defined(R_VERSION) && R_VERSION >= R_Version(4, 6, 0)
-    PROTECT(envVarsSEXP = R_lsInternal3(R_GlobalEnv, allnames, FALSE));
+    PROTECT(envVarsSEXP = R_lsInternal3(R_GlobalEnv, allnames, TRUE));
 #else
     PROTECT(envVarsSEXP = R_lsInternal(R_GlobalEnv, allnames));
 #endif
