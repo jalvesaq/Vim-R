@@ -1,3 +1,4 @@
+#define ENABLE_LEGACY_NONAPI_FUNS
 #include <R.h> /* to include Rconfig.h */
 #include <Rversion.h>
 #include <Rdefines.h>
@@ -908,12 +909,11 @@ void vimcom_task(void) {
 
             /* From R-exts: Evaluating R expressions from C */
             SEXP s, t;
-            PROTECT(t = s = allocList(2));
-            SET_TYPEOF(s, LANGSXP);
-            SETCAR(t, install("options"));
+            t = s = PROTECT(Rf_allocLang(2));
+            SETCAR(t, Rf_install("options"));
             t = CDR(t);
-            SETCAR(t, ScalarInteger((int)columns));
-            SET_TAG(t, install("width"));
+            SETCAR(t, Rf_ScalarInteger((int)columns));
+            SET_TAG(t, Rf_install("width"));
             eval(s, R_GlobalEnv);
             UNPROTECT(1);
 
