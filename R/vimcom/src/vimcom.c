@@ -474,7 +474,7 @@ static char *vimcom_glbnv_line(SEXP *x, const char *xname, const char *curenv,
     } else if (Rf_isFactor(*x)) {
         p = vimcom_strcat(p, "\006!\006");
 #if defined(R_VERSION) && R_VERSION >= R_Version(4, 6, 0)
-    } else if (Rf_isScalarString(*x)) {
+    } else if (Rf_isString(*x)) {
 #else
     } else if (Rf_isValidString(*x)) {
 #endif
@@ -909,7 +909,12 @@ void vimcom_task(void) {
 
             /* From R-exts: Evaluating R expressions from C */
             SEXP s, t;
+#if R_VERSION >= R_Version(4, 4, 0)
             t = s = PROTECT(Rf_allocLang(2));
+#else
+            PROTECT(t = s = Rf_allocList(2));
+            SET_TYPEOF(s, LANGSXP);
+#endif
             SETCAR(t, Rf_install("options"));
             t = CDR(t);
             SETCAR(t, Rf_ScalarInteger((int)columns));
