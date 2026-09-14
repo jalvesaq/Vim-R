@@ -1,11 +1,15 @@
 # Vim-R (superseded by R.nvim)
 
-> [!Note]
-> For Neovim users, this plugin is superseded by [R.nvim](https://github.com/R-nvim/R.nvim).
-> I no longer use Vim-R and will only fix newly reported bugs if they
-> are serious enough to prevent its use. I will not fix minor bugs.
-
 Vim-R improves Vim's support to edit R scripts.
+
+## Notes
+
+- For Neovim users, this plugin is superseded by [R.nvim](https://github.com/R-nvim/R.nvim).
+
+- I no longer use Vim-R and will only fix newly reported bugs if they are
+  serious enough to prevent its use. I will not fix minor bugs. If you want to
+  contribute to an actively maintained project, please consider
+  [jcfaria/Vim-R](https://github.com/jcfaria/Vim-R).
 
 ## Installation and use
 
